@@ -1,0 +1,12 @@
+div.divider {
+    width:80%;
+    margin:auto;
+    height:1px;
+    background-color: #f2f2f2;
+    margin-top:10px;
+    margin-bottom:10px;
+}
+
+ul li {
+    list-style: none;
+}
