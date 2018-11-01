@@ -1,65 +1,47 @@
+var items = [];
 
-function createItem(index) {
-    // Create input element
-    let input = document.createElement("input");
-    input.setAttribute("data-item",index);
-    input.setAttribute("type","text");
-    input.setAttribute("placeholder","Item to rank");
-    // Create Button element
-    let button = document.createElement("button");
-    button.setAttribute("data-item",index);
-    button.setAttribute("class","btn btn-primary");
-    let buttonText = document.createTextNode("Add Item");
-    button.appendChild(buttonText);
-    // Create list item and append input and button
-    let listItem = document.createElement("li");
-    listItem.setAttribute("data-item", index)
-    listItem.appendChild(input);
-    listItem.appendChild(button);
-    // Add event listeners to the items
-    let items = document.querySelectorAll("span.items ul li input");
-    let lastItem = items[items.length-1];
-    lastItem.focus();
-    input.addEventListener("keypress", function (e) {
-        if (e.which == 13 && this.value.length > 0) {
-            // Remove button
-            createItem(index+1);
-        } else if (e.which == 8 && !this.value) {
-            listItem.outerHTML = "";
-            let prevButton = document.createElement("button");
-            prevButton.setAttribute("data-item",index-1);
-            prevButton.setAttribute("class","btn btn-primary");
-            prevButton.addEventListener("click", function (e) {
-                e.preventDefault();
-                this.style.display = "none";
-                createItem(index);
-            });
-            document.querySelector("li[data-item='"+index-1+"']").appendChild(prevButton);
-            document.querySelector("input[data-item='"+index-1+"']").focus();
-        }
-    });
-    button.addEventListener("click", function (e) {
-        e.preventDefault();
-        this.style.display = "none";
-        createItem(index+1);
-    });
-    // Append list item to the list
-    let list = document.querySelector("span.items ul");
-    list.appendChild(listItem);
-    
+function createItem(itemName) {
+    let item = {};
+    item.name = itemName;
+    item.score = 0;
+    items.push(item);
+    populateList();
+}
+
+function populateList() {
+    let list = document.querySelector("span ul");
+    list.innerHTML = "";
+    for (let i = 0; i < items.length; i++) {
+        let listItem = document.createElement("li");
+        listItem.setAttribute("data-item",i);
+        let title = document.createTextNode(items[i].name);
+        listItem.appendChild(title);
+        let destroy = document.createItem("button");
+        destroy.setAttribute("class","btn btn-danger");
+        destroy.appendChild("Remove");
+        destroy.addEventListener("click", function (e) {
+            e.preventDefault();
+            // remove item i
+            // recursively call populate list
+        })
+        listItem.appendChild(destroy);
+        list.appendChild(listItem); 
+    }
 }
 
 document.querySelector("button.btn-primary").addEventListener("click", function (e) {
     e.preventDefault();
-    let index = parseInt(this.getAttribute("data-item"))+1;
-    this.style.display = "none";
-    createItem(index);
+    let inputElement = document.querySelector("input[type='text']");
+    let itemName = inputElement.value;
+    inputElement.value = "";
+    createItem(itemName);
 });
 
 document.querySelector("input[type='text']").addEventListener("keypress", function (e) {
-    let index = parseInt(this.getAttribute("data-item"))+1;
     if (e.which == 13 && this.value.length > 0) {
-        createItem(index);
+        let itemName = this.value;
+        this.value = "";
+        createItem(itemName);
     }
 });
 
