@@ -16,9 +16,10 @@ function populateList() {
         listItem.setAttribute("data-item",i);
         let title = document.createTextNode(items[i].name);
         listItem.appendChild(title);
-        let destroy = document.createItem("button");
+        let destroy = document.createElement("button");
         destroy.setAttribute("class","btn btn-danger");
-        destroy.appendChild("Remove");
+        let buttonText = document.createTextNode("Remove Item");
+        destroy.appendChild(buttonText);
         destroy.addEventListener("click", function (e) {
             e.preventDefault();
             // remove item i
