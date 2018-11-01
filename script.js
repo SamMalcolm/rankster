@@ -14,18 +14,18 @@ function populateList() {
     for (let i = 0; i < items.length; i++) {
         let listItem = document.createElement("li");
         listItem.setAttribute("data-item",i);
-        let title = document.createTextNode(items[i].name);
-        listItem.appendChild(title);
+        let title = document.createTextNode(" "+items[i].name);
         let destroy = document.createElement("button");
         destroy.setAttribute("class","btn btn-danger");
-        let buttonText = document.createTextNode("Remove Item");
+        let buttonText = document.createTextNode("X");
         destroy.appendChild(buttonText);
         destroy.addEventListener("click", function (e) {
             e.preventDefault();
-            // remove item i
-            // recursively call populate list
+            items.splice(i,1);
+            populateList();
         })
         listItem.appendChild(destroy);
+        listItem.appendChild(title);
         list.appendChild(listItem); 
     }
 }
@@ -48,15 +48,14 @@ document.querySelector("input[type='text']").addEventListener("keypress", functi
 
 document.querySelector("button.btn-success").addEventListener("click", function (e) {
     e.preventDefault();
-    let items = document.querySelectorAll("span.items ul li");
-    if (items.length <= 2) {
-        (items.length == 2) ? alert("You must add more than 1 item to rank") : alert("You must add items to rank")
+    if (items.length < 2) {
+        (items.length == 1) ? alert("You must add more than 1 item to rank") : alert("You must add items to rank")
     } else {
-        beginTest(items);
+        beginTest();
     }
 })
 
-function beginTest(items) {
+function beginTest() {
     // gather items and form array of JSON objects, then start comparison via find pairedscore function
     console.log("Begin test");
     console.log(items);
