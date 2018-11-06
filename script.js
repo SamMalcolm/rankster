@@ -55,16 +55,93 @@ document.querySelector("button.btn-success").addEventListener("click", function 
     }
 })
 
+function findPairedScore() {
+    // return index of 2 items that are scored the same, if no item is scored the same return false and end test
+    let pair = [];
+    for (let i = 0; i < items.length; i++) {
+        let testItem = items[i];
+        for (let a = 0; a < items.length; a++) {
+            if (a !== i) {
+                if (testItem.score == items[a].score) {
+                    pair.push(i);
+                    pair.push(a);
+                    return pair;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+function handleClick(arrayIndex) {
+    console.log(arrayIndex);
+    return items[arrayIndex].score++;
+}
+
+function testPair(pair) {
+    let itemOneIndex = pair[0];
+    let itemTwoIndex = pair[1];
+    let testButton = document.createElement("button");
+    testButton.setAttribute("class","btn btn-primary");
+    let compareButton = document.createElement("button");
+    compareButton.setAttribute("class","btn btn-primary");
+    compareButton.setAttribute("data-array-index",itemTwoIndex);
+    testButton.setAttribute("data-array-index",itemOneIndex);
+    let testText = document.createTextNode(items[itemOneIndex].name);
+    let compareText = document.createTextNode(items[itemTwoIndex].name);
+    testButton.appendChild(testText);
+    compareButton.appendChild(compareText);
+    testButton.addEventListener("click", function (e) {
+        e.preventDefault();
+        handleClick(this.getAttribute("data-array-index"));
+        this.outerHTML = "";
+        compareButton.outerHTML = "";
+        if (pair = findPairedScore()) {
+            testPair(pair);
+        } else {
+            endTest();
+        }
+    });
+    compareButton.addEventListener("click", function (e) {
+        e.preventDefault();
+        handleClick(this.getAttribute("data-array-index"));
+        this.outerHTML = "";
+        testButton.outerHTML = "";
+        if (pair = findPairedScore()) {
+            testPair(pair);
+        } else {
+            endTest();
+        }
+    });
+    document.querySelector("span.test-area").appendChild(testButton);
+    document.querySelector("span.test-area").appendChild(compareButton);
+
+}
+
 function beginTest() {
     // gather items and form array of JSON objects, then start comparison via find pairedscore function
     console.log("Begin test");
     console.log(items);
+    let pair;
+    if (pair = findPairedScore()) {
+        testPair(pair);
+    } else {
+        endTest();
+    }
 }
 
-function findPairedScore() {
-    // return index of 2 items that are scored the same, if no item is scored the same return false and end test
-}
+
 
 function endTest() {
-
+    items.sort(function (a, b) {
+        return parseFloat(b.score) - parseFloat(a.score);
+    });
+    for (let i = 0; i < items.length; i++) {
+        let alert = document.createElement("div");
+        alert.setAttribute("class", "alert alert-primary");
+        let no = i+1;
+        let text = document.createTextNode(no+": "+items[i].name);
+        alert.appendChild(text);
+        document.querySelector("span.ranked-area").appendChild(alert);
+    }
 }
