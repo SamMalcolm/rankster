@@ -82,6 +82,7 @@ function handleClick(arrayIndex, superiorIndex) {
     for (let i = 0; i < items[arrayIndex].superiors.length; i ++) {
         let supi = items[arrayIndex].superiors[i];
         items[supi].score++;
+        // Need to somehow increment the nested superiors also
     }
     return items[arrayIndex].score++;
 }
