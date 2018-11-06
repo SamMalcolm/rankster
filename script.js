@@ -4,6 +4,7 @@ function createItem(itemName) {
     let item = {};
     item.name = itemName;
     item.score = 0;
+    item.superiors = [];
     items.push(item);
     populateList();
 }
@@ -73,8 +74,13 @@ function findPairedScore() {
     return false;
 }
 
-function handleClick(arrayIndex) {
+function handleClick(arrayIndex, superiorIndex) {
     console.log(arrayIndex);
+    items[superiorIndex].superiors.push(arrayIndex);
+    for (let i = 0; i < items[arrayIndex].superiors.length; i ++) {
+        let supi = items[arrayIndex].superiors[i];
+        items[supi].score++;
+    }
     return items[arrayIndex].score++;
 }
 
@@ -93,7 +99,7 @@ function testPair(pair) {
     compareButton.appendChild(compareText);
     testButton.addEventListener("click", function (e) {
         e.preventDefault();
-        handleClick(this.getAttribute("data-array-index"));
+        handleClick(itemOneIndex, itemTwoIndex);
         this.outerHTML = "";
         compareButton.outerHTML = "";
         if (pair = findPairedScore()) {
@@ -104,7 +110,7 @@ function testPair(pair) {
     });
     compareButton.addEventListener("click", function (e) {
         e.preventDefault();
-        handleClick(this.getAttribute("data-array-index"));
+        handleClick(itemTwoIndex, itemOneIndex);
         this.outerHTML = "";
         testButton.outerHTML = "";
         if (pair = findPairedScore()) {
