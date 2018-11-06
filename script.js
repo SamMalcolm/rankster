@@ -83,6 +83,7 @@ function handleClick(arrayIndex, superiorIndex) {
         let supi = items[arrayIndex].superiors[i];
         items[supi].score++;
         // Need to somehow increment the nested superiors also
+        // Recursion! add increment superiors function so and call itself again if item has superiors
     }
     return items[arrayIndex].score++;
 }
