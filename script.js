@@ -76,7 +76,9 @@ function findPairedScore() {
 
 function handleClick(arrayIndex, superiorIndex) {
     console.log(arrayIndex);
-    items[superiorIndex].superiors.push(arrayIndex);
+    if (items[superiorIndex].superiors.indexOf(arrayIndex) == -1) {
+        items[superiorIndex].superiors.push(arrayIndex);
+    }
     for (let i = 0; i < items[arrayIndex].superiors.length; i ++) {
         let supi = items[arrayIndex].superiors[i];
         items[supi].score++;
