@@ -74,17 +74,25 @@ function findPairedScore() {
     return false;
 }
 
+function handleSuperiors(arrayIndex) {
+    if (items[arrayIndex].superiors.length > 0) {
+        for (let i = 0; i < items[arrayIndex].superiors.length; i ++) {
+            let supi = items[arrayIndex].superiors[i];
+            items[supi].score++;
+            if (items[supi].superiors.length > 0) {
+                handleSuperiors(supi);
+            }
+        }
+    }
+    
+}
+
 function handleClick(arrayIndex, superiorIndex) {
     console.log(arrayIndex);
     if (items[superiorIndex].superiors.indexOf(arrayIndex) == -1) {
         items[superiorIndex].superiors.push(arrayIndex);
     }
-    for (let i = 0; i < items[arrayIndex].superiors.length; i ++) {
-        let supi = items[arrayIndex].superiors[i];
-        items[supi].score++;
-        // Need to somehow increment the nested superiors also
-        // Recursion! add increment superiors function so and call itself again if item has superiors
-    }
+    handleSuperiors(arrayIndex);
     return items[arrayIndex].score++;
 }
 
