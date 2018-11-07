@@ -1,4 +1,5 @@
 var items = [];
+var testInProgress = false;
 
 function createItem(itemName) {
     let item = {};
@@ -44,6 +45,11 @@ document.querySelector("input[type='text']").addEventListener("keypress", functi
         let itemName = this.value;
         this.value = "";
         createItem(itemName);
+    } else if (e.which == 8 && this.value.length == 0 && items.length > 0) {
+        e.preventDefault();
+        let poppedItem = items.pop();
+        populateList();
+        this.value = poppedItem.name;
     }
 });
 
@@ -52,12 +58,14 @@ document.querySelector("button.btn-success").addEventListener("click", function 
     if (items.length < 2) {
         (items.length == 1) ? alert("You must add more than 1 item to rank") : alert("You must add items to rank")
     } else {
-        beginTest();
+        if (!testInProgress) {
+            testInProgress = true;
+            beginTest();
+        }
     }
-})
+});
 
 function findPairedScore() {
-    // return index of 2 items that are scored the same, if no item is scored the same return false and end test
     let pair = [];
     for (let i = 0; i < items.length; i++) {
         let testItem = items[i];
@@ -77,10 +85,10 @@ function findPairedScore() {
 function handleSuperiors(arrayIndex) {
     if (items[arrayIndex].superiors.length > 0) {
         for (let i = 0; i < items[arrayIndex].superiors.length; i ++) {
-            let supi = items[arrayIndex].superiors[i];
-            items[supi].score++;
-            if (items[supi].superiors.length > 0) {
-                handleSuperiors(supi);
+            let superiorIndex = items[arrayIndex].superiors[i];
+            items[superiorIndex].score++;
+            if (items[superiorIndex].superiors.length > 0) {
+                handleSuperiors(superiorIndex);
             }
         }
     }
@@ -88,11 +96,12 @@ function handleSuperiors(arrayIndex) {
 }
 
 function handleClick(arrayIndex, superiorIndex) {
-    console.log(arrayIndex);
     if (items[superiorIndex].superiors.indexOf(arrayIndex) == -1) {
         items[superiorIndex].superiors.push(arrayIndex);
     }
-    handleSuperiors(arrayIndex);
+    if (items[arrayIndex].superiors.length > 0) {
+        handleSuperiors(arrayIndex);
+    }
     return items[arrayIndex].score++;
 }
 
@@ -103,8 +112,6 @@ function testPair(pair) {
     testButton.setAttribute("class","btn btn-primary");
     let compareButton = document.createElement("button");
     compareButton.setAttribute("class","btn btn-primary");
-    compareButton.setAttribute("data-array-index",itemTwoIndex);
-    testButton.setAttribute("data-array-index",itemOneIndex);
     let testText = document.createTextNode(items[itemOneIndex].name);
     let compareText = document.createTextNode(items[itemTwoIndex].name);
     testButton.appendChild(testText);
@@ -133,13 +140,10 @@ function testPair(pair) {
     });
     document.querySelector("span.test-area").appendChild(testButton);
     document.querySelector("span.test-area").appendChild(compareButton);
-
 }
 
 function beginTest() {
-    // gather items and form array of JSON objects, then start comparison via find pairedscore function
-    console.log("Begin test");
-    console.log(items);
+    document.querySelector("button.clearForm").style.display = "none";
     let pair;
     if (pair = findPairedScore()) {
         testPair(pair);
@@ -148,9 +152,17 @@ function beginTest() {
     }
 }
 
+document.querySelector("button.clearForm").addEventListener("click", function (e) {
+    e.preventDefault();
+    items = [];
+    populateList();
+    document.querySelector("span.ranked-area").innerHTML = "";
+});
 
 
 function endTest() {
+    document.querySelector("button.clearForm").style.display = "block";
+    testInProgress = false;
     items.sort(function (a, b) {
         return parseFloat(b.score) - parseFloat(a.score);
     });
@@ -162,4 +174,22 @@ function endTest() {
         alert.appendChild(text);
         document.querySelector("span.ranked-area").appendChild(alert);
     }
+
+    var retakeTestButton = document.createElement("button");
+    retakeTestButton.setAttribute("class","btn btn-secondary retake");
+    let text = document.createTextNode("Retake Same Test");
+    retakeTestButton.appendChild(text);
+
+    retakeTestButton.addEventListener("click", function (e) {
+        e.preventDefault();
+        this.outerHTML = "";
+        for (let i = 0; i < items.length; i ++) {
+            items[i].score = 0;
+            items[i].superiors = [];
+        }
+        document.querySelector("span.ranked-area").innerHTML = "";
+        beginTest();
+    });
+
+    document.querySelector("span.controls").appendChild(retakeTestButton);
 }
