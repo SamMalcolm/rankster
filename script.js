@@ -154,6 +154,9 @@ function beginTest() {
 
 document.querySelector("button.clearForm").addEventListener("click", function (e) {
     e.preventDefault();
+    if (document.querySelector("button.retake")) {
+        document.querySelector("button.retake").outerHTML = "";
+    }
     items = [];
     populateList();
     document.querySelector("span.ranked-area").innerHTML = "";
