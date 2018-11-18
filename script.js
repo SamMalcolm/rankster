@@ -1,5 +1,113 @@
-var items = [];
-var testInProgress = false;
+var items = [],
+    testInProgress = false,
+    listItems = getURLParam("listItems",window.location.href),
+    starWarsFilms = [
+        "The Phantom Menace",
+        "Attack of the Clones",
+        "Revenge of the Sith",
+        "A New Hope",
+        "The Empire Strikes Back",
+        "Return of the Jedi",
+        "The Force Awakens",
+        "The Last Jedi",
+        "Rogue One: A Star Wars Story",
+        "Solo: A Star Wars Story"
+    ],
+    mcuFilms = [
+        "Iron Man",
+        "The Incredible Hulk",
+        "Iron Man 2",
+        "Thor",
+        "Captain America: The First Avenger",
+        "The Avengers",
+        "Iron Man 3",
+        "Thor: The Dark World",
+        "Captain America: The Winder Soldier",
+        "Guardians of the Galaxy",
+        "Avengers: Age of Ultron",
+        "Ant-Man",
+        "Captain America: Civil War",
+        "Doctor Strange",
+        "Guardians of the Galaxy: Vol. 2",
+        "Spiderman: Homecoming",
+        "Thor: Ragnarok",
+        "Blank Panther",
+        "Avengers: Infinity War",
+        "Ant-Man and the Wasp"
+    ],
+    pixarFilms = [
+        "Toy Story",
+        "A Bug's Life",
+        "Toy Story 2",
+        "Monsters Inc.",
+        "Finding Nemo",
+        "The Incredibles",
+        "Cars",
+        "Ratatouille",
+        "Wall-E",
+        "Up",
+        "Toy Story 3",
+        "Cars 2",
+        "Brave",
+        "Monsters University",
+        "Inside Out",
+        "The Good Dinosaur",
+        "Finding Dory",
+        "Cars 3",
+        "Coco",
+        "Incredibles 2"
+    ];
+
+function preLoadedList(arr) {
+    for (let i = 0; i < arr.length; i++) {
+        createItem(arr[i]);
+    }
+}
+
+function getURLParam(key,target){
+    var values = [];
+    if (!target) target = location.href;
+    key = key.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+    var pattern = key + '=([^&#]+)';
+    var o_reg = new RegExp(pattern,'ig');
+    while (true){
+        var matches = o_reg.exec(target);
+        if (matches && matches[1]){
+            values.push(decodeURI(matches[1]));
+        } else {
+            break;
+        }
+    }
+
+    if (!values.length){
+        return null;   
+    } else {
+        return values.length == 1 ? values[0] : values;
+    }
+}
+
+if (listItems) {
+    for (let i = 0; i< listItems.length; i++) {
+        createItem(listItems[i]);
+    }
+}
+
+function updateShareableLink() {
+    let str;
+    str = window.location.href;
+    let strSplit = str.split('?');
+    if (str.split('?').length == 2) {
+        str = strSplit[0];
+    }
+    str += '?';
+    for (let i = 0; i < items.length; i++) {
+        if (i !== 0) {
+            str += '&'
+        }
+        str += 'listItems[]='+encodeURI(items[i].name);
+    }
+    document.querySelector('input.share-link').value = str;
+}
 
 function createItem(itemName) {
     let item = {};
@@ -7,6 +115,7 @@ function createItem(itemName) {
     item.score = 0;
     item.superiors = [];
     items.push(item);
+    updateShareableLink();
     populateList();
 }
 
@@ -196,3 +305,20 @@ function endTest() {
 
     document.querySelector("span.controls").appendChild(retakeTestButton);
 }
+
+let preloadedLists = document.querySelectorAll('.preloadList');
+for (let i = 0; i < preloadedLists.length; i++) {
+    preloadedLists[i].addEventListener("click", function (e) {
+        console.log("clicked");
+        console.log(this.getAttribute('data-list'));
+        e.preventDefault();
+        if (this.getAttribute('data-list') == "mcu") {
+            preLoadedList(mcuFilms);
+        } else if (this.getAttribute('data-list') == "starwars") {
+            preLoadedList(starWarsFilms);
+        } else if (this.getAttribute('data-list') == "pixar") {
+            preLoadedList(pixarFilms);
+        }
+    });
+}
+
